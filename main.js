@@ -26,8 +26,8 @@ var fpsCount = 0;
 var fpsTime = 0;
 
 // Tileset Variables
-var LAYER_COUNT = 3;
-var MAP = {tw: 60, th: 15};
+var LAYER_COUNT = 6;
+var MAP = {tw: 59, th: 14};
 var TILE = 35;
 var TILESET_TILE = TILE * 2;
 var TILESET_PADDING = 2;
