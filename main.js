@@ -1,6 +1,7 @@
 var canvas = document.getElementById("gameCanvas");
 var context = canvas.getContext("2d");
 
+// Delta Time
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
 
@@ -16,6 +17,7 @@ function getDeltaTime() {
 	return deltaTime;
 }
 
+// Screen Variables
 var SCREEN_WIDTH = canvas.width;
 var SCREEN_HEIGHT = canvas.height;
 
@@ -23,7 +25,17 @@ var fps = 0;
 var fpsCount = 0;
 var fpsTime = 0;
 
+// Tileset Variables
+var LAYER_COUNT = 3;
+var MAP = {tw: 60, th: 15};
+var TILE = 35;
+var TILESET_TILE = TILE * 2;
+var TILESET_PADDING = 2;
+var TILESET_SPACING = 2;
+var TILESET_COUNT_X = 14;
+var TILESET_COUNT_Y = 14;
 
+// Player Variables
 var chuckNorris = document.createElement("img");
 
 chuckNorris.src = "hero.png";
@@ -31,13 +43,36 @@ chuckNorris.src = "hero.png";
 var player = new Player();
 var keyboard = new Keyboard();
 
+// Set Tileset
+var tileset = document.createElement("img");
+tileset.src = "tileset.png";
 
+// Draw Map
+function drawMap() {
+	for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) {
+		var idx = 0;
+		for (var y = 0; y < level1.layers[layerIdx].height; y++) {
+			for (var x = 0; x < level1.layers[layerIdx].width; x++) {
+				if (level1.layers[layerIdx].data[idx] != 0) {
+					var tileIndex = level1.layers[layerIdx].data[idx] - 1;
+					var sx = TILESET_PADDING + (tileIndex % TILESET_COUNT_X) * (TILESET_TILE + TILESET_SPACING);
+					var sy = TILESET_PADDING + (Math.floor(tileIndex / TILESET_COUNT_X)) * (TILESET_TILE + TILESET_SPACING);
+					context.drawImage(tileset, sx, sy, TILESET_TILE, TILESET_TILE, x * TILE, (y - 1) * TILE, TILESET_TILE, TILESET_TILE);
+				}
+				idx++;
+			}
+		}
+	}
+}
+
+// Run Function
 function run() {
 	context.fillStyle = "#ccc";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
 	var deltaTime = getDeltaTime();
 
+	drawMap();
 	player.update(deltaTime);
 	player.draw();
 
@@ -83,3 +118,5 @@ function run() {
 })();
 
 window.onEachFrame(run);
+
+
