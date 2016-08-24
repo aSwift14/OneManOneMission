@@ -27,7 +27,7 @@ var fpsTime = 0;
 
 // Tileset Variables
 var LAYER_COUNT = 6;
-var MAP = {tw: 59, th: 14};
+var MAP = { tw: 59, th: 14 };
 var TILE = 35;
 var TILESET_TILE = TILE * 2;
 var TILESET_PADDING = 2;
@@ -47,6 +47,64 @@ var keyboard = new Keyboard();
 var tileset = document.createElement("img");
 tileset.src = "tileset.png";
 
+// Collision Variables
+var LAYER_BACKGOUND = 0;
+var LAYER_HOUSE = 1;
+var LAYER_CRATES = 2;
+var LAYER_PLATFORMS = 3;
+var LAYER_OBJECTIVES = 4;
+var LAYER_LADDERS = 5;
+
+// Player Movement Variable (Physics)
+
+ // abitrary choice for 1m
+var METER = TILE;
+ // very exaggerated gravity (6x)
+var GRAVITY = METER * 9.8 * 6;
+ // max horizontal speed (10 tiles per second)
+var MAXDX = METER * 10;
+ // max vertical speed (15 tiles per second)
+var MAXDY = METER * 15;
+ // horizontal acceleration - take 1/2 second to reach maxdx
+var ACCEL = MAXDX * 2;
+ // horizontal friction - take 1/6 second to stop from maxdx
+var FRICTION = MAXDX * 6;
+ // (a large) instantaneous jump impulse
+var JUMP = METER * 1500;
+
+
+// Create Collision Maps
+function cellAtPixelCoord(layer, x, y) {
+	if (x < 0 || x > SCREEN_WIDTH || y < 0)
+		return 1;
+											// let the player drop of the bottom of the screen (this means death)
+	if (y > SCREEN_HEIGHT)
+		return 0;
+	return cellAtTileCoord(layer, p2t(x), p2t(y));
+};
+function cellAtTileCoord(layer, tx, ty) {
+	if (tx < 0 || tx >= MAP.tw || ty < 0)
+		return 1;
+											// let the player drop of the bottom of the screen (this means death)
+	if (ty >= MAP.th)
+		return 0;
+	return cells[layer][ty][tx];
+};
+function tileToPixel(tile) {
+	return tile * TILE;
+};
+function pixelToTile(pixel) {
+	return Math.floor(pixel / TILE);
+};
+function bound(value, min, max) {
+	if (value < min)
+		return min;
+
+	if (value > max)
+		return max;
+	return value;
+}
+
 // Draw Map
 function drawMap() {
 	for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) {
@@ -65,58 +123,87 @@ function drawMap() {
 	}
 }
 
-// Run Function
-function run() {
-	context.fillStyle = "#ccc";
-	context.fillRect(0, 0, canvas.width, canvas.height);
-
-	var deltaTime = getDeltaTime();
-
-	drawMap();
-	player.update(deltaTime);
-	player.draw();
-
-
-	fpsTime += deltaTime;
-	fpsCount++;
-	if (fpsTime >= 1) {
-		fpsTime -= 1;
-		fps = fpsCount;
-		fpsCount = 0;
+// Set Collision Variable
+var cells = []; // the array that holds our simplified collision data
+function initialize() {
+	for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) { // initialize the collision map
+		cells[layerIdx] = [];
+		var idx = 0;
+		for (var y = 0; y < level1.layers[layerIdx].height; y++) {
+			cells[layerIdx][y] = [];
+			for (var x = 0; x < level1.layers[layerIdx].width; x++) {
+				if (level1.layers[layerIdx].data[idx] != 0) {
+					// for each tile we find in the layer data, we need to create 4 collisions
+					// (because our collision squares are 35x35 but the tile in the
+					// level are 70x70)
+					cells[layerIdx][y][x] = 1;
+					cells[layerIdx][y - 1][x] = 1;
+					cells[layerIdx][y - 1][x + 1] = 1;
+					cells[layerIdx][y][x + 1] = 1;
+				}
+				else if (cells[layerIdx][y][x] != 1) {
+					// if we haven't set this cell's value, then set it to 0 now
+					cells[layerIdx][y][x] = 0;
+				}
+				idx++;
+			}
+		}
 	}
-	// draw the FPS
-	context.fillStyle = "#f00";
-	context.font = "14px Arial";
-	context.fillText("FPS: " + fps, 5, 20, 100);
 }
 
+	// Run Function
+	function run() {
+		context.fillStyle = "#ccc";
+		context.fillRect(0, 0, canvas.width, canvas.height);
 
-//-------------------- Don't modify anything below here
+		var deltaTime = getDeltaTime();
+
+		drawMap();
+		player.update(deltaTime);
+		player.draw();
 
 
-// This code will set up the framework so that the 'run' function is called 60 times per second.
-// We have a some options to fall back on in case the browser doesn't support our preferred method.
-(function () {
-  var onEachFrame;
-  if (window.requestAnimationFrame) {
-    onEachFrame = function (cb) {
-      var _cb = function () { cb(); window.requestAnimationFrame(_cb); }
-      _cb();
-    };
-  } else if (window.mozRequestAnimationFrame) {
-    onEachFrame = function (cb) {
-      var _cb = function () { cb(); window.mozRequestAnimationFrame(_cb); }
-      _cb();
-    };
-  } else {
-    onEachFrame = function (cb) {
-      setInterval(cb, 1000 / 60);
-    }
-  }
+		fpsTime += deltaTime;
+		fpsCount++;
+		if (fpsTime >= 1) {
+			fpsTime -= 1;
+			fps = fpsCount;
+			fpsCount = 0;
+		}
+		// draw the FPS
+		context.fillStyle = "#f00";
+		context.font = "14px Arial";
+		context.fillText("FPS: " + fps, 5, 20, 100);
+	}
 
-  window.onEachFrame = onEachFrame;
-})();
+	initialize();
 
-window.onEachFrame(run);
+	//-------------------- Don't modify anything below here
+
+
+	// This code will set up the framework so that the 'run' function is called 60 times per second.
+	// We have a some options to fall back on in case the browser doesn't support our preferred method.
+	(function () {
+		var onEachFrame;
+		if (window.requestAnimationFrame) {
+			onEachFrame = function (cb) {
+				var _cb = function () { cb(); window.requestAnimationFrame(_cb); }
+				_cb();
+			};
+		} else if (window.mozRequestAnimationFrame) {
+			onEachFrame = function (cb) {
+				var _cb = function () { cb(); window.mozRequestAnimationFrame(_cb); }
+				_cb();
+			};
+		} else {
+			onEachFrame = function (cb) {
+				setInterval(cb, 1000 / 60);
+			}
+		}
+
+		window.onEachFrame = onEachFrame;
+	})();
+
+	window.onEachFrame(run);
 
 
