@@ -22,7 +22,7 @@ var Keyboard = function() {
 
 Keyboard.prototype.onKeyDown = function(evt)
 {
-    this.keys[evt.KeyCode] = true;
+    this.keys[evt.keyCode] = true;
 };
 
 Keyboard.prototype.onKeyUp = function(evt)

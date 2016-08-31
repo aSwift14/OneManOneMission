@@ -23,6 +23,7 @@ var Player = function () {
         [60, 61, 62, 63, 64]);
     this.sprite.buildAnimation(12, 8, 165, 126, 0.05,
         [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78]);
+
     for (var i = 0; i < ANIM_MAX; i++) {
         this.sprite.setAnimationOffset(i, -55, -87);
     }
@@ -43,10 +44,6 @@ var Player = function () {
 
 };
 
-var KEY_SPACE = 32;
-var KEY_LEFT = 37;
-var KEY_RIGHT = 39;
-
 
 Player.prototype.update = function (deltaTime) {
 
@@ -56,29 +53,26 @@ Player.prototype.update = function (deltaTime) {
     var right = false;
     var jump = false;
 
-    // Check If Key is Pressed
-
+    // check keypress events
     if (keyboard.isKeyDown(keyboard.KEY_LEFT) == true) {
         left = true;
         this.direction = LEFT;
         if (this.sprite.currentAnimation != ANIM_WALK_LEFT)
             this.sprite.setAnimation(ANIM_WALK_LEFT);
-    }
 
-    else if (keyboard.isKeyDown(keyboard.KEY_RIGHT) == true) {
+    } else if (keyboard.isKeyDown(keyboard.KEY_RIGHT) == true) {
         right = true;
         this.direction = RIGHT;
         if (this.sprite.currentAnimation != ANIM_WALK_RIGHT)
             this.sprite.setAnimation(ANIM_WALK_RIGHT);
-    }
-    else {
+    } else {
         if (this.jumping == false && this.falling == false) {
             if (this.direction == LEFT) {
-                if (this.sprite.currentAnimation != ANIM_IDLE_LEFT && this.jumping == false)
+                if (this.sprite.currentAnimation != ANIM_IDLE_LEFT)
                     this.sprite.setAnimation(ANIM_IDLE_LEFT);
             }
             else {
-                if (this.sprite.currentAnimation != ANIM_IDLE_RIGHT && this.jumping == false)
+                if (this.sprite.currentAnimation != ANIM_IDLE_RIGHT)
                     this.sprite.setAnimation(ANIM_IDLE_RIGHT);
             }
         }
@@ -93,30 +87,24 @@ Player.prototype.update = function (deltaTime) {
         }
     }
 
-
     var wasleft = this.velocity.x < 0;
     var wasright = this.velocity.x > 0;
     var falling = this.falling;
-    var ddx = 0; // Acceleration
+    var ddx = 0; // acceleration
     var ddy = GRAVITY;
 
     if (left)
-        ddx = ddx - ACCEL; // If Player Wants to Go Left
-
+        ddx = ddx - ACCEL; // player wants to go left
     else if (wasleft)
-        ddx = ddx + FRICTION; // If Player was going Left, but not any more
-
+        ddx = ddx + FRICTION; // player was going left, but not any more
     if (right)
-        ddx = ddx + ACCEL; // If Player Wants to Go Right
-
+        ddx = ddx + ACCEL; // player wants to go right
     else if (wasright)
-        ddx = ddx - FRICTION; // If Player was going Right, but not any more
-
+        ddx = ddx - FRICTION; // player was going right, but not any more
     if (jump && !this.jumping && !falling) {
-        ddy = ddy - JUMP; // Apply an instantaneous (large) vertical impulse
+        ddy = ddy - JUMP; // apply an instantaneous (large) vertical impulse
         this.jumping = true;
     }
-
     if (jump && !this.jumping && !falling) {
         // apply an instantaneous (large) vertical impulse
         ddy = ddy - JUMP;
@@ -139,8 +127,6 @@ Player.prototype.update = function (deltaTime) {
         this.velocity.x = 0;
     }
 
-    // Collision detection
-
     var tx = pixelToTile(this.position.x);
     var ty = pixelToTile(this.position.y);
     var nx = (this.position.x) % TILE; // true if player overlaps right
@@ -159,34 +145,33 @@ Player.prototype.update = function (deltaTime) {
             this.jumping = false; // (or jumping)
             ny = 0; // no longer overlaps the cells below
         }
-    }
 
-    else if (this.velocity.y < 0) {
-        if ((cell && !celldown) || (cellright && !celldiag && nx)) {
-            // clamp the y position to avoid jumping into platform above
-            this.position.y = tileToPixel(ty + 1);
-            this.velocity.y = 0;    // stop upward velocity
-            // player is no longer really in that cell, we clamped them to the cell below
-            cell = celldown;
-            cellright = celldiag; // (ditto)
-            ny = 0;         // player no longer overlaps the cells below
+        else if (this.velocity.y < 0) {
+            if ((cell && !celldown) || (cellright && !celldiag && nx)) {
+                // clamp the y position to avoid jumping into platform above
+                this.position.y = tileToPixel(ty + 1);
+                this.velocity.y = 0; // stop upward velocity
+                // player is no longer really in that cell, we clamped them to the cell below
+                cell = celldown;
+                cellright = celldiag; // (ditto)
+                ny = 0; // player no longer overlaps the cells below
+            }
+        }
+        if (this.velocity.x > 0) {
+            if ((cellright && !cell) || (celldiag && !celldown && ny)) {
+                // clamp the x position to avoid moving into the platform we just hit
+                this.position.x = tileToPixel(tx);
+                this.velocity.x = 0; // stop horizontal velocity
+            }
+        }
+        else if (this.velocity.x < 0) {
+            if ((cell && !cellright) || (celldown && !celldiag && ny)) {
+                // clamp the x position to avoid moving into the platform we just hit
+                this.position.x = tileToPixel(tx + 1);
+                this.velocity.x = 0; // stop horizontal velocity
+            }
         }
     }
-    if (this.velocity.x > 0) {
-        if ((cellright && !cell) || (celldiag && !celldown && ny)) {
-            // clamp the x position to avoid moving into the platform we just hit
-            this.position.x = tileToPixel(tx);
-            this.velocity.x = 0;    // stop horizontal velocity
-        }
-    }
-    else if (this.velocity.x < 0) {
-        if ((cell && !cellright) || (celldown && !celldiag && ny)) {
-            // clamp the x position to avoid moving into the platform we just hit
-            this.position.x = tileToPixel(tx + 1);
-            this.velocity.x = 0;    // stop horizontal velocity
-        }
-    }
-
 
 };
 

@@ -6,7 +6,6 @@ var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
 
 
-
 function getDeltaTime() {
 	endFrameMillis = startFrameMillis;
 	startFrameMillis = Date.now();
@@ -41,6 +40,7 @@ var fpsTime = 0;
 var KEY_SPACE = 32;
 var KEY_LEFT = 37;
 var KEY_RIGHT = 39;
+var KEY_ESCAPE = 27;
 
 // Tileset Variables
 var LAYER_COUNT = 6;
@@ -226,6 +226,33 @@ function runGame(deltaTime)
 	drawMap();
 	player.update(deltaTime);
 	player.draw();
+	
+	if(Vector2.x > SCREEN_HEIGHT) {
+		gameOverTimer -= deltaTime;
+		console.log(SCREEN_HEIGHT);
+		if (gameOverTimer <= 0)
+		{
+			gameState = STATE_GAMEOVER;
+			return;
+		}
+	}
+
+}
+function runGameOver(deltaTime) 
+{
+			context.fillStyle = "#000";
+			context.font = "24px Arial";
+			context.fillText("GAME OVER", 200, 240);
+
+			context.fillStyle = "#000";
+			context.font = "16px Arial";
+			context.fillText("Press ESC to Restart!", 200, 268);
+
+			if (keyboard.isKeyDown(KEY_ESCAPE) == true)
+			{
+				gameState = STATE_GAME;
+				return;
+			}
 }
 
 //-------------------- Don't modify anything below here
