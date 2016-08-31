@@ -57,6 +57,7 @@ var TILESET_COUNT_Y = 14;
 // abitrary choice for 1m
 var METER = TILE;
 // very exaggerated gravity (6x)
+var GRAVITY = METER * 9.8 * 3.2;
 // max horizontal speed (10 tiles per second)
 var MAXDX = METER * 10;
 // max vertical speed (15 tiles per second)
