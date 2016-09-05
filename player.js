@@ -1,5 +1,6 @@
 var LEFT = 0;
 var RIGHT = 1;
+var DOWN = 1;
 
 var ANIM_IDLE_LEFT = 0;
 var ANIM_JUMP_LEFT = 1;
@@ -8,6 +9,8 @@ var ANIM_IDLE_RIGHT = 3;
 var ANIM_JUMP_RIGHT = 4;
 var ANIM_WALK_RIGHT = 5;
 var ANIM_MAX = 6;
+
+var deathTimer = 0.5;
 
 var Player = function () {
     this.sprite = new Sprite("ChuckNorris.png");
@@ -41,6 +44,9 @@ var Player = function () {
     this.jumping = false;
 
     this.direction = LEFT;
+
+    this.isDead = false;
+
 
 };
 
@@ -77,7 +83,7 @@ Player.prototype.update = function (deltaTime) {
             }
         }
     }
-    if (keyboard.isKeyDown(keyboard.KEY_SPACE) == true) {
+    if (keyboard.isKeyDown(keyboard.KEY_UP) == true) {
         jump = true;
         if (left == true) {
             this.sprite.setAnimation(ANIM_JUMP_LEFT);
@@ -85,6 +91,11 @@ Player.prototype.update = function (deltaTime) {
         if (right == true) {
             this.sprite.setAnimation(ANIM_JUMP_RIGHT);
         }
+    }
+    if (keyboard.isKeyDown(keyboard.KEY_SPACE) == true && this.cooldownTimer <= 0) {
+        sfxFire.play();
+        this.cooldownTimer = 0.3;
+        // Shoot a bullet
     }
 
     var wasleft = this.velocity.x < 0;
@@ -172,10 +183,52 @@ Player.prototype.update = function (deltaTime) {
             }
         }
     }
+    //Player Collision with Water
+    if (cellAtTileCoord(LAYER_WATER, tx, ty) == true) {
+        Player.isDead = true;
+        lives -= 1;
+        //Sets Gameover State if Lives = 0
+        if (lives = 0) {
+                gameState = STATE_GAMEOVER;
+                return;
+        }
+    }
 
+    //Player Life Removal
+    if (Player.isDead == true && gameState == STATE_GAME) {
+        deathTimer -= deltaTime;
+        if (deathTimer <= 0) {
+            this.position.set(1 * TILE, 11 * TILE);
+            Player.isDead = false;
+            return;
+        }
+    }
+
+    //Player Collision with Objectives
+    if (cellAtTileCoord(LAYER_OBJECTIVES, tx, ty) == true) {
+        gameOverTimer -= deltaTime;
+        if (gameOverTimer <= 0) {
+                gameState = STATE_GAMEOVER;
+                return;
+            }
+    }
+    //Player Interaction with Doors
+        if (levelState == LEVEL_1) {
+            if ((cellAtTileCoord(LAYER_DOORS, tx, ty) == true) && (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true)) {
+                levelState = LEVEL_1_ROOM;
+                return;
+            }
+
+        } else {
+            if ((cellAtTileCoord(LAYER_DOORS, tx, ty) == true) && (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true)) {
+                levelState = LEVEL_1;
+                return;
+            }
+            this.cooldownTimer = 0;
+        }
 };
 
 Player.prototype.draw = function () {
-    this.sprite.draw(context, this.position.x, this.position.y);
+    this.sprite.draw(context, this.position.x - worldOffsetX, this.position.y);
 }
 
