@@ -10,8 +10,6 @@ var ANIM_JUMP_RIGHT = 4;
 var ANIM_WALK_RIGHT = 5;
 var ANIM_MAX = 6;
 
-var deathTimer = 0.5;
-
 var Player = function () {
     this.sprite = new Sprite("ChuckNorris.png");
     this.sprite.buildAnimation(12, 8, 165, 126, 0.05,
@@ -183,50 +181,49 @@ Player.prototype.update = function (deltaTime) {
             }
         }
     }
-    //Player Collision with Water
+    var doorCoolDown = 0;
+//Player Collision with Water
     if (cellAtTileCoord(LAYER_WATER, tx, ty) == true) {
-        Player.isDead = true;
-        lives -= 1;
+        Player.isDead = true; 
+        lives = lives - 1;
         //Sets Gameover State if Lives = 0
-        if (lives = 0) {
+        if (lives == 0) {
                 gameState = STATE_GAMEOVER;
-                return;
         }
     }
-
-    //Player Life Removal
-    if (Player.isDead == true && gameState == STATE_GAME) {
-        deathTimer -= deltaTime;
-        if (deathTimer <= 0) {
+//Player Life Removal
+    if (Player.isDead == true && gameState == STATE_GAME) {;
             this.position.set(1 * TILE, 11 * TILE);
             Player.isDead = false;
-            return;
-        }
     }
 
-    //Player Collision with Objectives
+//Player Collision with Objectives
     if (cellAtTileCoord(LAYER_OBJECTIVES, tx, ty) == true) {
-        gameOverTimer -= deltaTime;
-        if (gameOverTimer <= 0) {
                 gameState = STATE_GAMEOVER;
                 return;
-            }
     }
-    //Player Interaction with Doors
-        if (levelState == LEVEL_1) {
-            if ((cellAtTileCoord(LAYER_DOORS, tx, ty) == true) && (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true)) {
+    var doorCoolDown = 1;
+//Player Interaction with Doors//
+    if (levelState == LEVEL_1) {
+        
+        if ((cellAtTileCoord(LAYER_DOORS, tx, ty) == true)) {
+            if (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true) {
+                console.log(1);
                 levelState = LEVEL_1_ROOM;
-                return;
             }
-
-        } else {
-            if ((cellAtTileCoord(LAYER_DOORS, tx, ty) == true) && (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true)) {
-                levelState = LEVEL_1;
-                return;
-            }
-            this.cooldownTimer = 0;
         }
+
+    } else {
+     
+        if (cellAtTileCoord(LAYER_DOORS, tx, ty) == true) {
+            if (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true) {
+                levelState = LEVEL_1;
+            }
+        }
+        this.cooldownTimer = 0;
+    }
 };
+
 
 Player.prototype.draw = function () {
     this.sprite.draw(context, this.position.x - worldOffsetX, this.position.y);

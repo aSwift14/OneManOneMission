@@ -26,7 +26,7 @@ var STATE_GAMEOVER = 2;
 var gameState = STATE_SPLASH;
 
 var splashTimer = 3;
-var gameOverTimer = 5;
+var gameOverTimer = 2;
 
 //Level Variables
 var LEVEL_1 = 0;
@@ -167,7 +167,7 @@ function drawMap() {
 				}
 			}
 		}
-	}
+	} 
 	if (levelState == LEVEL_1_ROOM) {
 		for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) {
 			for (var y = 0; y < level1Room.layers[layerIdx].height; y++) {
@@ -189,7 +189,7 @@ function drawMap() {
 				}
 			}
 		}
-	}
+	} 
 }
 
 // Intitialize
@@ -357,8 +357,9 @@ function initialize() {
 			}
 		}
 	}
-	
-	musicBackground = new Howl(
+}
+function music() {
+		musicBackground = new Howl(
 		{
 			urls: [""],
 			loop: true,
@@ -377,7 +378,6 @@ function initialize() {
 			}
 		});
 }
-
 // Run Function
 function run() {
 	
@@ -401,10 +401,8 @@ function run() {
 		switch(levelState)
     {
         case LEVEL_1:
-			initialize();
             break;
         case LEVEL_1_ROOM:
-			initialize();
             break;
     }
 
@@ -419,6 +417,7 @@ function run() {
 }
 
 initialize();
+music();
 
 function runSplash(deltaTime)
 {
@@ -442,17 +441,7 @@ function runGame(deltaTime)
 {	
 	player.update(deltaTime);
 	drawMap();
-	player.draw()
-
-	if(Vector2.x > SCREEN_HEIGHT) {
-		gameOverTimer -= deltaTime;
-		console.log(SCREEN_HEIGHT);
-		if (gameOverTimer <= 0)
-		{
-			gameState = STATE_GAMEOVER;
-			return;
-		}
-	}
+	player.draw();
 
 	//Draw Time
     context.fillStyle = "#000";
@@ -474,6 +463,7 @@ function runGameOver(deltaTime)
 			{
 				gameState = STATE_GAME;
 				gameOverTimer = 5;
+				lives = 4;
 			}
 }
 
