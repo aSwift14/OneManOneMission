@@ -22,6 +22,7 @@ function getDeltaTime() {
 var STATE_SPLASH = 0;
 var STATE_GAME = 1;
 var STATE_GAMEOVER = 2;
+var STATE_GAMEWON = 3;
 
 var gameState = STATE_SPLASH;
 
@@ -36,6 +37,15 @@ var levelState = LEVEL_1;
 
 //Game Variables
 var lives = 3;
+var heartImage = document.createElement("img");
+var heartImageCover = document.createElement("img");
+
+//Score Variables
+var score = 0;
+var scoreImageBox = document.createElement("img");
+
+//Door Cooldown
+var doorCoolDown = 1;
 
 // Screen Variables
 var SCREEN_WIDTH = canvas.width;
@@ -271,9 +281,9 @@ function runLevel1 () {
 				cells[LAYER_OBJECTIVES][y - 1][x + 1] = 1;
 				cells[LAYER_OBJECTIVES][y][x + 1] = 1;
 			}
-			else if (cells[LAYER_WATER][y][x] != 1) {
+			else if (cells[LAYER_OBJECTIVES][y][x] != 1) {
 				// if we haven't set this cell's value, then set it to 0 now
-				cells[LAYER_WATER][y][x] = 0;
+				cells[LAYER_OBJECTIVES][y][x] = 0;
 			}
 			idx++;
 		}
@@ -289,9 +299,9 @@ function runLevel1 () {
 				cells[LAYER_DOORS][y - 1][x + 1] = 1;
 				cells[LAYER_DOORS][y][x + 1] = 1;
 			}
-			else if (cells[LAYER_WATER][y][x] != 1) {
+			else if (cells[LAYER_DOORS][y][x] != 1) {
 				// if we haven't set this cell's value, then set it to 0 now
-				cells[LAYER_WATER][y][x] = 0;
+				cells[LAYER_DOORS][y][x] = 0;
 			}
 			idx++;
 		}
@@ -350,9 +360,9 @@ function runLevel1Room() {
 				cells[LAYER_OBJECTIVES][y - 1][x + 1] = 1;
 				cells[LAYER_OBJECTIVES][y][x + 1] = 1;
 			}
-			else if (cells[LAYER_WATER][y][x] != 1) {
+			else if (cells[LAYER_OBJECTIVES][y][x] != 1) {
 				// if we haven't set this cell's value, then set it to 0 now
-				cells[LAYER_WATER][y][x] = 0;
+				cells[LAYER_OBJECTIVES][y][x] = 0;
 			}
 			idx++;
 		}
@@ -368,9 +378,9 @@ function runLevel1Room() {
 				cells[LAYER_DOORS][y - 1][x + 1] = 1;
 				cells[LAYER_DOORS][y][x + 1] = 1;
 			}
-			else if (cells[LAYER_WATER][y][x] != 1) {
+			else if (cells[LAYER_DOORS][y][x] != 1) {
 				// if we haven't set this cell's value, then set it to 0 now
-				cells[LAYER_WATER][y][x] = 0;
+				cells[LAYER_DOORS][y][x] = 0;
 			}
 			idx++;
 		}
@@ -381,6 +391,8 @@ function run() {
 	
 	context.fillStyle = "#ccc";
 	context.fillRect(0, 0, canvas.width, canvas.height);
+
+	doorCoolDown -= deltaTime;
 
 	var deltaTime = getDeltaTime();
 
@@ -395,6 +407,9 @@ function run() {
         case STATE_GAMEOVER:
             runGameOver(deltaTime);
             break;
+		case STATE_GAMEWON:
+			runGameWon(deltaTime);
+			break;
     }
 		switch(levelState)
     {
@@ -437,26 +452,60 @@ function runGame(deltaTime) {
 	drawMap();
 	player.draw();
 
-	//Draw Time
-    context.fillStyle = "#000";
-    context.font = "16px Arial";
-    context.fillText("Lives = " + lives, 8, 20);
+	
+	//Draw Lives
+	heartImage.src = "heartimage.png";
+
+	for(var i = 0; i < lives; i++) {
+		context.drawImage(heartImage, 9 + ((heartImage.width + 5)* i), 10);
+	}
+	//Draw Live Overlay
+	heartImageCover.src = "heartimagelive.png"
+	context.drawImage(heartImageCover, 3, -1);
+
+	//Draw Score Box
+	scoreImageBox.src = "score box.png"
+	context.drawImage(scoreImageBox, 0, 5);
+
+	//Draw Score
+	context.fillStyle = "#ffffff";
+	context.textAlign = "right";
+	context.font = "24px Grobold";
+	context.fillText(+score, 620, 36);
 
 }
 function runGameOver(deltaTime) {
 	context.fillStyle = "#000";
+	context.textAlign = "left"
 	context.font = "24px Arial";
 	context.fillText("GAME OVER", 200, 240);
 
 	context.fillStyle = "#000";
+	context.textAlign = "left";
 	context.font = "16px Arial";
 	context.fillText("Press ESC to Restart!", 200, 268);
 
 	if (keyboard.isKeyDown(keyboard.KEY_ESCAPE) == true) {
 		gameState = STATE_GAME;
-		gameOverTimer = 5;
-		lives = 4;
+		lives = 3;
 		Player.position = (1 * TILE, 11 * TILE);
+	}
+}
+function runGameWon(deltaTime) {
+	context.fillStyle = "#000";
+	context.textAlign = "left";
+	context.font = "24px Arial";
+	context.fillText("Congratulations! You've Won!", 200, 240);
+
+	context.fillStyle = "#000";
+	context.textAlign = "left";
+	context.font = "16px Arial";
+	context.fillText("Press ESC to Restart!", 200, 268);
+
+	if (keyboard.isKeyDown(keyboard.KEY_ESCAPE) == true) {
+		Player.position = (1 * TILE, 11 * TILE);
+		gameState = STATE_GAME;
+		lives = 4;
 	}
 }
 
