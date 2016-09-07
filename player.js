@@ -204,10 +204,10 @@ Player.prototype.update = function (deltaTime) {
     }
     var doorCoolDown = 1;
 //Player Interaction with Doors//
-    if (levelState == LEVEL_1) {
-        
+    if (levelState == LEVEL_1) {    
         if ((cellAtTileCoord(LAYER_DOORS, tx, ty) == true)) {
-            if (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true) {
+            // if (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true) {
+            if (keyboard.onKeyDown(keyboard.KEY_INTERACT)) {
                 console.log(1);
                 levelState = LEVEL_1_ROOM;
             }
@@ -216,7 +216,8 @@ Player.prototype.update = function (deltaTime) {
     } else {
      
         if (cellAtTileCoord(LAYER_DOORS, tx, ty) == true) {
-            if (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true) {
+            // if (keyboard.isKeyDown(keyboard.KEYINTERACT) == true) {
+            if (keyboard.onKeyDown(keyboard.KEY_INTERACT)) {
                 levelState = LEVEL_1;
             }
         }

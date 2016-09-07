@@ -198,166 +198,6 @@ var cells = [];
 var musicBackground;
 var sfxFire;
 
-function initialize() {
-	if (levelState == LEVEL_1) {
-		for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) { // initialize the collision map
-			cells[layerIdx] = [];
-			var idx = 0;
-			for (var y = 0; y < level1.layers[layerIdx].height; y++) {
-				cells[layerIdx][y] = [];
-				for (var x = 0; x < level1.layers[layerIdx].width; x++) {
-					if (level1.layers[layerIdx].data[idx] != 0) {
-						// for each tile we find in the layer data, we need to create 4 collisions
-						// (because our collision squares are 35x35 but the tile in the
-						// level are 70x70)
-						cells[layerIdx][y][x] = 1;
-						cells[layerIdx][y - 1][x] = 1;
-						cells[layerIdx][y - 1][x + 1] = 1;
-						cells[layerIdx][y][x + 1] = 1;
-					}
-					else if (cells[layerIdx][y][x] != 1) {
-						// if we haven't set this cell's value, then set it to 0 now
-						cells[layerIdx][y][x] = 0;
-					}
-					idx++;
-				}
-			}
-		}
-		cells[LAYER_WATER] = [];
-		idx = 0;
-		for (var y = 0; y < level1.layers[LAYER_WATER].height; y++) {
-			cells[LAYER_WATER][y] = [];
-			for (var x = 0; x < level1.layers[LAYER_WATER].width; x++) {
-				if (level1.layers[LAYER_WATER].data[idx] != 0) {
-					cells[LAYER_WATER][y][x] = 1;
-					cells[LAYER_WATER][y - 1][x] = 1;
-					cells[LAYER_WATER][y - 1][x + 1] = 1;
-					cells[LAYER_WATER][y][x + 1] = 1;
-				}
-				else if (cells[LAYER_WATER][y][x] != 1) {
-					// if we haven't set this cell's value, then set it to 0 now
-					cells[LAYER_WATER][y][x] = 0;
-				}
-				idx++;
-			}
-		}
-		cells[LAYER_OBJECTIVES] = [];
-		idx = 0;
-		for (var y = 0; y < level1.layers[LAYER_OBJECTIVES].height; y++) {
-			cells[LAYER_OBJECTIVES][y] = [];
-			for (var x = 0; x < level1.layers[LAYER_OBJECTIVES].width; x++) {
-				if (level1.layers[LAYER_OBJECTIVES].data[idx] != 0) {
-					cells[LAYER_OBJECTIVES][y][x] = 1;
-					cells[LAYER_OBJECTIVES][y - 1][x] = 1;
-					cells[LAYER_OBJECTIVES][y - 1][x + 1] = 1;
-					cells[LAYER_OBJECTIVES][y][x + 1] = 1;
-				}
-				else if (cells[LAYER_WATER][y][x] != 1) {
-					// if we haven't set this cell's value, then set it to 0 now
-					cells[LAYER_WATER][y][x] = 0;
-				}
-				idx++;
-			}
-		}
-		cells[LAYER_DOORS] = [];
-		idx = 0;
-		for (var y = 0; y < level1.layers[LAYER_DOORS].height; y++) {
-			cells[LAYER_DOORS][y] = [];
-			for (var x = 0; x < level1.layers[LAYER_DOORS].width; x++) {
-				if (level1.layers[LAYER_DOORS].data[idx] != 0) {
-					cells[LAYER_DOORS][y][x] = 1;
-					cells[LAYER_DOORS][y - 1][x] = 1;
-					cells[LAYER_DOORS][y - 1][x + 1] = 1;
-					cells[LAYER_DOORS][y][x + 1] = 1;
-				}
-				else if (cells[LAYER_WATER][y][x] != 1) {
-					// if we haven't set this cell's value, then set it to 0 now
-					cells[LAYER_WATER][y][x] = 0;
-				}
-				idx++;
-			}
-		}
-	}
-	if (levelState == LEVEL_1_ROOM) {
-		for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) { // initialize the collision map
-			cells[layerIdx] = [];
-			var idx = 0;
-			for (var y = 0; y < level1Room.layers[layerIdx].height; y++) {
-				cells[layerIdx][y] = [];
-				for (var x = 0; x < level1Room.layers[layerIdx].width; x++) {
-					if (level1Room.layers[layerIdx].data[idx] != 0) {
-						// for each tile we find in the layer data, we need to create 4 collisions
-						// (because our collision squares are 35x35 but the tile in the
-						// level are 70x70)
-						cells[layerIdx][y][x] = 1;
-						cells[layerIdx][y - 1][x] = 1;
-						cells[layerIdx][y - 1][x + 1] = 1;
-						cells[layerIdx][y][x + 1] = 1;
-					}
-					else if (cells[layerIdx][y][x] != 1) {
-						// if we haven't set this cell's value, then set it to 0 now
-						cells[layerIdx][y][x] = 0;
-					}
-					idx++;
-				}
-			}
-		}
-		cells[LAYER_WATER] = [];
-		idx = 0;
-		for (var y = 0; y < level1Room.layers[LAYER_WATER].height; y++) {
-			cells[LAYER_WATER][y] = [];
-			for (var x = 0; x < level1Room.layers[LAYER_WATER].width; x++) {
-				if (level1Room.layers[LAYER_WATER].data[idx] != 0) {
-					cells[LAYER_WATER][y][x] = 1;
-					cells[LAYER_WATER][y - 1][x] = 1;
-					cells[LAYER_WATER][y - 1][x + 1] = 1;
-					cells[LAYER_WATER][y][x + 1] = 1;
-				}
-				else if (cells[LAYER_WATER][y][x] != 1) {
-					// if we haven't set this cell's value, then set it to 0 now
-					cells[LAYER_WATER][y][x] = 0;
-				}
-				idx++;
-			}
-		}
-		cells[LAYER_OBJECTIVES] = [];
-		idx = 0;
-		for (var y = 0; y < level1Room.layers[LAYER_OBJECTIVES].height; y++) {
-			cells[LAYER_OBJECTIVES][y] = [];
-			for (var x = 0; x < level1Room.layers[LAYER_OBJECTIVES].width; x++) {
-				if (level1Room.layers[LAYER_OBJECTIVES].data[idx] != 0) {
-					cells[LAYER_OBJECTIVES][y][x] = 1;
-					cells[LAYER_OBJECTIVES][y - 1][x] = 1;
-					cells[LAYER_OBJECTIVES][y - 1][x + 1] = 1;
-					cells[LAYER_OBJECTIVES][y][x + 1] = 1;
-				}
-				else if (cells[LAYER_WATER][y][x] != 1) {
-					// if we haven't set this cell's value, then set it to 0 now
-					cells[LAYER_WATER][y][x] = 0;
-				}
-				idx++;
-			}
-		}
-		cells[LAYER_DOORS] = [];
-		idx = 0;
-		for (var y = 0; y < level1Room.layers[LAYER_DOORS].height; y++) {
-			cells[LAYER_DOORS][y] = [];
-			for (var x = 0; x < level1Room.layers[LAYER_DOORS].width; x++) {
-				if (level1Room.layers[LAYER_DOORS].data[idx] != 0) {
-					cells[LAYER_DOORS][y][x] = 1;
-					cells[LAYER_DOORS][y - 1][x] = 1;
-					cells[LAYER_DOORS][y - 1][x + 1] = 1;
-					cells[LAYER_DOORS][y][x + 1] = 1;
-				}
-				else if (cells[LAYER_WATER][y][x] != 1) {
-					// if we haven't set this cell's value, then set it to 0 now
-					cells[LAYER_WATER][y][x] = 0;
-				}
-				idx++;
-			}
-		}
-	}
-}
 function music() {
 		musicBackground = new Howl(
 		{
@@ -377,6 +217,164 @@ function music() {
 				isSfxPlaying = false;
 			}
 		});
+}
+function runLevel1 () {
+	for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) { // initialize the collision map
+		cells[layerIdx] = [];
+		var idx = 0;
+		for (var y = 0; y < level1.layers[layerIdx].height; y++) {
+			cells[layerIdx][y] = [];
+			for (var x = 0; x < level1.layers[layerIdx].width; x++) {
+				if (level1.layers[layerIdx].data[idx] != 0) {
+					// for each tile we find in the layer data, we need to create 4 collisions
+					// (because our collision squares are 35x35 but the tile in the
+					// level are 70x70)
+					cells[layerIdx][y][x] = 1;
+					cells[layerIdx][y - 1][x] = 1;
+					cells[layerIdx][y - 1][x + 1] = 1;
+					cells[layerIdx][y][x + 1] = 1;
+				}
+				else if (cells[layerIdx][y][x] != 1) {
+					// if we haven't set this cell's value, then set it to 0 now
+					cells[layerIdx][y][x] = 0;
+				}
+				idx++;
+			}
+		}
+	}
+	cells[LAYER_WATER] = [];
+	idx = 0;
+	for (var y = 0; y < level1.layers[LAYER_WATER].height; y++) {
+		cells[LAYER_WATER][y] = [];
+		for (var x = 0; x < level1.layers[LAYER_WATER].width; x++) {
+			if (level1.layers[LAYER_WATER].data[idx] != 0) {
+				cells[LAYER_WATER][y][x] = 1;
+				cells[LAYER_WATER][y - 1][x] = 1;
+				cells[LAYER_WATER][y - 1][x + 1] = 1;
+				cells[LAYER_WATER][y][x + 1] = 1;
+			}
+			else if (cells[LAYER_WATER][y][x] != 1) {
+				// if we haven't set this cell's value, then set it to 0 now
+				cells[LAYER_WATER][y][x] = 0;
+			}
+			idx++;
+		}
+	}
+	cells[LAYER_OBJECTIVES] = [];
+	idx = 0;
+	for (var y = 0; y < level1.layers[LAYER_OBJECTIVES].height; y++) {
+		cells[LAYER_OBJECTIVES][y] = [];
+		for (var x = 0; x < level1.layers[LAYER_OBJECTIVES].width; x++) {
+			if (level1.layers[LAYER_OBJECTIVES].data[idx] != 0) {
+				cells[LAYER_OBJECTIVES][y][x] = 1;
+				cells[LAYER_OBJECTIVES][y - 1][x] = 1;
+				cells[LAYER_OBJECTIVES][y - 1][x + 1] = 1;
+				cells[LAYER_OBJECTIVES][y][x + 1] = 1;
+			}
+			else if (cells[LAYER_WATER][y][x] != 1) {
+				// if we haven't set this cell's value, then set it to 0 now
+				cells[LAYER_WATER][y][x] = 0;
+			}
+			idx++;
+		}
+	}
+	cells[LAYER_DOORS] = [];
+	idx = 0;
+	for (var y = 0; y < level1.layers[LAYER_DOORS].height; y++) {
+		cells[LAYER_DOORS][y] = [];
+		for (var x = 0; x < level1.layers[LAYER_DOORS].width; x++) {
+			if (level1.layers[LAYER_DOORS].data[idx] != 0) {
+				cells[LAYER_DOORS][y][x] = 1;
+				cells[LAYER_DOORS][y - 1][x] = 1;
+				cells[LAYER_DOORS][y - 1][x + 1] = 1;
+				cells[LAYER_DOORS][y][x + 1] = 1;
+			}
+			else if (cells[LAYER_WATER][y][x] != 1) {
+				// if we haven't set this cell's value, then set it to 0 now
+				cells[LAYER_WATER][y][x] = 0;
+			}
+			idx++;
+		}
+	}
+}
+function runLevel1Room() {
+	for (var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) { // initialize the collision map
+		cells[layerIdx] = [];
+		var idx = 0;
+		for (var y = 0; y < level1Room.layers[layerIdx].height; y++) {
+			cells[layerIdx][y] = [];
+			for (var x = 0; x < level1Room.layers[layerIdx].width; x++) {
+				if (level1Room.layers[layerIdx].data[idx] != 0) {
+					// for each tile we find in the layer data, we need to create 4 collisions
+					// (because our collision squares are 35x35 but the tile in the
+					// level are 70x70)
+					cells[layerIdx][y][x] = 1;
+					cells[layerIdx][y - 1][x] = 1;
+					cells[layerIdx][y - 1][x + 1] = 1;
+					cells[layerIdx][y][x + 1] = 1;
+				}
+				else if (cells[layerIdx][y][x] != 1) {
+					// if we haven't set this cell's value, then set it to 0 now
+					cells[layerIdx][y][x] = 0;
+				}
+				idx++;
+			}
+		}
+	}
+	cells[LAYER_WATER] = [];
+	idx = 0;
+	for (var y = 0; y < level1Room.layers[LAYER_WATER].height; y++) {
+		cells[LAYER_WATER][y] = [];
+		for (var x = 0; x < level1Room.layers[LAYER_WATER].width; x++) {
+			if (level1Room.layers[LAYER_WATER].data[idx] != 0) {
+				cells[LAYER_WATER][y][x] = 1;
+				cells[LAYER_WATER][y - 1][x] = 1;
+				cells[LAYER_WATER][y - 1][x + 1] = 1;
+				cells[LAYER_WATER][y][x + 1] = 1;
+			}
+			else if (cells[LAYER_WATER][y][x] != 1) {
+				// if we haven't set this cell's value, then set it to 0 now
+				cells[LAYER_WATER][y][x] = 0;
+			}
+			idx++;
+		}
+	}
+	cells[LAYER_OBJECTIVES] = [];
+	idx = 0;
+	for (var y = 0; y < level1Room.layers[LAYER_OBJECTIVES].height; y++) {
+		cells[LAYER_OBJECTIVES][y] = [];
+		for (var x = 0; x < level1Room.layers[LAYER_OBJECTIVES].width; x++) {
+			if (level1Room.layers[LAYER_OBJECTIVES].data[idx] != 0) {
+				cells[LAYER_OBJECTIVES][y][x] = 1;
+				cells[LAYER_OBJECTIVES][y - 1][x] = 1;
+				cells[LAYER_OBJECTIVES][y - 1][x + 1] = 1;
+				cells[LAYER_OBJECTIVES][y][x + 1] = 1;
+			}
+			else if (cells[LAYER_WATER][y][x] != 1) {
+				// if we haven't set this cell's value, then set it to 0 now
+				cells[LAYER_WATER][y][x] = 0;
+			}
+			idx++;
+		}
+	}
+	cells[LAYER_DOORS] = [];
+	idx = 0;
+	for (var y = 0; y < level1Room.layers[LAYER_DOORS].height; y++) {
+		cells[LAYER_DOORS][y] = [];
+		for (var x = 0; x < level1Room.layers[LAYER_DOORS].width; x++) {
+			if (level1Room.layers[LAYER_DOORS].data[idx] != 0) {
+				cells[LAYER_DOORS][y][x] = 1;
+				cells[LAYER_DOORS][y - 1][x] = 1;
+				cells[LAYER_DOORS][y - 1][x + 1] = 1;
+				cells[LAYER_DOORS][y][x + 1] = 1;
+			}
+			else if (cells[LAYER_WATER][y][x] != 1) {
+				// if we haven't set this cell's value, then set it to 0 now
+				cells[LAYER_WATER][y][x] = 0;
+			}
+			idx++;
+		}
+	}
 }
 // Run Function
 function run() {
@@ -401,8 +399,10 @@ function run() {
 		switch(levelState)
     {
         case LEVEL_1:
-            break;
+			runLevel1();
+        	break;
         case LEVEL_1_ROOM:
+			runLevel1Room();
             break;
     }
 
@@ -415,30 +415,24 @@ function run() {
 		fpsCount = 0;
 	}
 }
-
-initialize();
 music();
 
-function runSplash(deltaTime)
-{
+function runSplash(deltaTime) {
 	splashTimer -= deltaTime;
-    if (splashTimer <= 0)
-    {
+    if (splashTimer <= 0) {
         gameState = STATE_GAME;
         return;
     }
 
-			context.fillStyle = "#000";
-			context.font = "24px Arial";
-			context.fillText("Welcome to A Platformer,", 200, 240);
+	context.fillStyle = "#000";
+	context.font = "24px Arial";
+	context.fillText("Welcome to A Platformer,", 200, 240);
 
-			context.fillStyle = "#000";
-			context.font = "16px Arial";
-			context.fillText("By Aaron Swift", 200, 268);
+	context.fillStyle = "#000";
+	context.font = "16px Arial";
+	context.fillText("By Aaron Swift", 200, 268);
 }
-
-function runGame(deltaTime) 
-{	
+function runGame(deltaTime) {
 	player.update(deltaTime);
 	drawMap();
 	player.draw();
@@ -449,22 +443,21 @@ function runGame(deltaTime)
     context.fillText("Lives = " + lives, 8, 20);
 
 }
-function runGameOver(deltaTime) 
-{
-			context.fillStyle = "#000";
-			context.font = "24px Arial";
-			context.fillText("GAME OVER", 200, 240);
+function runGameOver(deltaTime) {
+	context.fillStyle = "#000";
+	context.font = "24px Arial";
+	context.fillText("GAME OVER", 200, 240);
 
-			context.fillStyle = "#000";
-			context.font = "16px Arial";
-			context.fillText("Press ESC to Restart!", 200, 268);
+	context.fillStyle = "#000";
+	context.font = "16px Arial";
+	context.fillText("Press ESC to Restart!", 200, 268);
 
-			if (keyboard.isKeyDown(keyboard.KEY_ESCAPE) == true)
-			{
-				gameState = STATE_GAME;
-				gameOverTimer = 5;
-				lives = 4;
-			}
+	if (keyboard.isKeyDown(keyboard.KEY_ESCAPE) == true) {
+		gameState = STATE_GAME;
+		gameOverTimer = 5;
+		lives = 4;
+		Player.position = (1 * TILE, 11 * TILE);
+	}
 }
 
 //-------------------- Don't modify anything below here
