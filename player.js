@@ -61,12 +61,14 @@ Player.prototype.update = function (deltaTime) {
     if (keyboard.isKeyDown(keyboard.KEY_LEFT) == true) {
         left = true;
         this.direction = LEFT;
+        score += 10;
         if (this.sprite.currentAnimation != ANIM_WALK_LEFT)
             this.sprite.setAnimation(ANIM_WALK_LEFT);
 
     } else if (keyboard.isKeyDown(keyboard.KEY_RIGHT) == true) {
         right = true;
         this.direction = RIGHT;
+        score += 10;
         if (this.sprite.currentAnimation != ANIM_WALK_RIGHT)
             this.sprite.setAnimation(ANIM_WALK_RIGHT);
     } else {
@@ -83,6 +85,7 @@ Player.prototype.update = function (deltaTime) {
     }
     if (keyboard.isKeyDown(keyboard.KEY_UP) == true) {
         jump = true;
+        score += 20;
         if (left == true) {
             this.sprite.setAnimation(ANIM_JUMP_LEFT);
         }
@@ -184,6 +187,7 @@ Player.prototype.update = function (deltaTime) {
 //Player Collision with Water
     if (this.position.y >= SCREEN_HEIGHT) {
         Player.isDead = true;
+        gameState = STATE_GAME;
     }
 //Player Life Removal
 
@@ -204,25 +208,28 @@ Player.prototype.update = function (deltaTime) {
         lives = 4;
     }
 //Player Interaction with Doors
-    if (levelState == LEVEL_1) {
+    if (doorCoolDown <= 0) {
+        if (levelState == LEVEL_1) {
             if ((cellAtTileCoord(LAYER_DOORS, tx, ty) == true)) {
                 if (keyboard.isKeyDown(keyboard.KEY_INTERACT) == true) {
-                    if (doorCoolDown <= 0) {
                     levelState = LEVEL_1_ROOM;
                     doorCoolDown = 1;
                 }
             }
         }
 
-    } else {
-            if (cellAtTileCoord(LAYER_DOORS, tx, ty) == true) {
-                if (keyboard.isKeyDown(keyboard.KEYINTERACT) == true) {
-                    if (doorCoolDown <= 0) {
-                    levelState = LEVEL_1;
-                    doorCoolDown = 1;
-                }
-            }
+    }
+
+if (doorCoolDown <= 0) {
+    if (levelState == LEVEL_1_ROOM) {
+        if (cellAtTileCoord(LAYER_DOORS, tx, ty) == true) {
+            if (keyboard.isKeyDown(keyboard.KEYINTERACT) == true) {
+                console.log(1);
+                levelState = LEVEL_1;
+                doorCoolDown = 1;
         }
+    }
+}
 
 };
 };

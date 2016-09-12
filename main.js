@@ -45,7 +45,7 @@ var score = 0;
 var scoreImageBox = document.createElement("img");
 
 //Door Cooldown
-var doorCoolDown = 1;
+var doorCoolDown = 0;
 
 // Screen Variables
 var SCREEN_WIDTH = canvas.width;
@@ -56,7 +56,6 @@ var fpsCount = 0;
 var fpsTime = 0;
 
 // Tileset Variables
-var LAYER_COUNT = 6;
 var MAP = { tw: 59, th: 14 };
 var TILE = 35;
 var TILESET_TILE = TILE * 2;
@@ -201,7 +200,9 @@ function drawMap() {
 		}
 	} 
 }
-
+function doorCoolDownTimer (deltaTime) {
+	doorCoolDown -= deltaTime;
+}
 // Intitialize
 var cells = [];
 
@@ -211,10 +212,10 @@ var sfxFire;
 function music() {
 		musicBackground = new Howl(
 		{
-			urls: [""],
+			urls: ["Adventure Meme.mp3"],
 			loop: true,
 			buffer: true,
-			volume: 0.18,
+			volume: 0.09,
 		});
 	musicBackground.play();
 
@@ -392,8 +393,6 @@ function run() {
 	context.fillStyle = "#ccc";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
-	doorCoolDown -= deltaTime;
-
 	var deltaTime = getDeltaTime();
 
 	    switch(gameState)
@@ -429,6 +428,7 @@ function run() {
 		fps = fpsCount;
 		fpsCount = 0;
 	}
+	doorCoolDownTimer(deltaTime);
 }
 music();
 
@@ -452,7 +452,6 @@ function runGame(deltaTime) {
 	drawMap();
 	player.draw();
 
-	
 	//Draw Lives
 	heartImage.src = "heartimage.png";
 
